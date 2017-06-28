@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Agendador de Transferências</title>
+    <style>
+        .danger {
+            color: #E82014;
+        }
+    </style>
+</head>
+<body>
+<form method="POST" th:action="@{/}" action="#" th:object="${transferencia}" novalidate="novalidate">
+
+    <div th:if="${mensagemErro}" class="danger">
+        <span th:text="${mensagemErro}">Ocorreu um erro!</span>
+    </div>
+
+    <div>
+        <label for="inpContaOrigem">Conta Origem</label>
+        <input type="text" id="inpContaOrigem" required="required" pattern="[0-9]{5}-[0-9]{1}" name="contaOrigem"
+               th:field="*{contaOrigem}"/>
+        <span class="danger" th:if="${#fields.hasErrors('contaOrigem')}" th:errors="*{contaOrigem}">Erro na conta origem</span>
+    </div>
+
+
+    <div>
+        <label for="inpContaDestino">Conta Destino</label>
+        <input type="text" id="inpContaDestino" required="required" pattern="[0-9]{5}-[0-9]{1}" name="contaDestino"
+               th:field="*{contaDestino}"/>
+        <span class="danger" th:if="${#fields.hasErrors('contaDestino')}" th:errors="*{contaDestino}">Erro na conta destino</span>
+    </div>
+
+    <div>
+        <label for="inpValor">Valor</label>
+        <input type="number" id="inpValor" required="required" name="valorTransferencia"
+               th:field="*{valorTransferencia}"/>
+        <span class="danger" th:if="${#fields.hasErrors('valorTransferencia')}" th:errors="*{valorTransferencia}">Erro no valor da transferencia</span>
+    </div>
+
+    <div>
+        <label>Data do Agendamento</label>
+        <input th:field="*{dataAgendamento}" type="date" required="required"/>
+        <span class="danger" th:if="${#fields.hasErrors('dataAgendamento')}"
+              th:errors="*{dataAgendamento}">Erro na data do agendamento</span>
+    </div>
+
+    <div>
+        <label>Tipo do Agendamento</label>
+        <select th:field="*{tipoTransferencia}" required="required">
+            <option value=""></option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+        </select>
+        <span class="danger" th:if="${#fields.hasErrors('tipoTransferencia')}" th:errors="*{tipoTransferencia}">Erro no tipo da Transferencia</span>
+    </div>
+
+    <input value="Enviar Agendamento" type="submit"/>
+</form>
+
+<hr/>
+<table>
+    <thead>
+    <tr>
+        <th>Conta Origem</th>
+        <th>Conta Destino</th>
+        <th>Valor Transferencia</th>
+        <th>Data de Cadastro</th>
+        <th>Data de Agendamento</th>
+        <th>Tipo de Agendamento</th>
+        <th>Taxa</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="transferencia : ${transferencias}" th:object="${transferencia}">
+        <td th:text="*{contaOrigem}"></td>
+        <td th:text="*{contaDestino}"></td>
+        <td th:text="${#numbers.formatDecimal(transferencia.valorTransferencia, 0, 2)}"></td>
+        <td th:text="*{dataCadastro}"></td>
+        <td th:text="*{dataAgendamento}"></td>
+        <td th:text="*{tipoTransferencia}"></td>
+        <td th:text="${#numbers.formatDecimal(transferencia.taxa, 0, 2)}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
