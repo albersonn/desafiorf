@@ -21,4 +21,17 @@ public class TransferenciaTDB {
     public static Transferencia criarTransferenciaZerada(String contaOrigem, String contaDestino, LocalDate dataAgendamento, TipoTransferencia tipoTransferencia) {
         return criarTransferencia(contaOrigem, contaDestino, BigDecimal.ZERO, dataAgendamento, tipoTransferencia);
     }
+
+    public static Transferencia clonarTransferenciaNaData(Transferencia transferenciaFonte, LocalDate novaDataAgendamento) {
+        Transferencia transferencia = new Transferencia();
+
+        transferencia.setDataCadastro(transferenciaFonte.getDataCadastro());
+        transferencia.setContaOrigem(transferenciaFonte.getContaOrigem());
+        transferencia.setContaDestino(transferenciaFonte.getContaDestino());
+        transferencia.setValorTransferencia(transferenciaFonte.getValorTransferencia());
+        transferencia.setDataAgendamento(novaDataAgendamento);
+        transferencia.setTipoTransferencia(transferenciaFonte.getTipoTransferencia());
+
+        return transferencia;
+    }
 }

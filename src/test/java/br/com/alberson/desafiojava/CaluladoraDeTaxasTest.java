@@ -5,7 +5,6 @@ import br.com.alberson.desafiojava.model.Transferencia;
 import br.com.alberson.desafiojava.tdo.TransferenciaTDB;
 import org.junit.Before;
 import org.junit.Test;
-import org.omg.CORBA.TRANSACTION_MODE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,6 +16,21 @@ import static org.junit.Assert.assertTrue;
 
 public class CaluladoraDeTaxasTest {
 
+    private static final BigDecimal ADICIONAL_A = new BigDecimal(2);
+    private static final BigDecimal TAXA_A = BigDecimal.valueOf(0.03);
+    private static final BigDecimal ADICIONAL_B_ATE_30_DIAS = BigDecimal.TEN;
+    private static final BigDecimal ADICIONAL_B_MAIS_30_DIAS = BigDecimal.valueOf(8);
+    private static final BigDecimal TAXA_C_MAIS_30_DIAS = BigDecimal.valueOf(0.012);
+    private static final BigDecimal TAXA_C_ATE_30_DIAS = BigDecimal.valueOf(0.021);
+    private static final BigDecimal TAXA_C_ATE_25_DIAS = BigDecimal.valueOf(0.043);
+    private static final BigDecimal TAXA_C_ATE_20_DIAS = BigDecimal.valueOf(0.054);
+    private static final BigDecimal TAXA_C_ATE_15_DIAS = BigDecimal.valueOf(0.067);
+    private static final BigDecimal TAXA_C_ATE_10_DIAS = BigDecimal.valueOf(0.074);
+    private static final BigDecimal TAXA_C_ATE_5_DIAS = BigDecimal.valueOf(0.083);
+    private static final BigDecimal LIMITE_VALOR_A = BigDecimal.valueOf(25_000.99);
+    private static final BigDecimal LIMITE_VALOR_INFERIOR_B = BigDecimal.valueOf(25_001);
+    private static final BigDecimal LIMITE_VALOR_SUPERIOR_B = BigDecimal.valueOf(120_000);
+    private static final BigDecimal LIMITE_VALOR_C = BigDecimal.valueOf(120_000.01);
     private CalculadoraDeTaxas calculadoraDeTaxas;
 
     @Before
@@ -58,19 +72,18 @@ public class CaluladoraDeTaxasTest {
 
         calculadoraDeTaxas.calcularTaxa(transferencia);
 
-        BigDecimal taxa = new BigDecimal(2);
-        taxa = taxa.add(valorTransferencia.multiply(BigDecimal.valueOf(0.03)).setScale(2, BigDecimal.ROUND_HALF_EVEN));
+        BigDecimal taxa = BigDecimal.ZERO;
+        taxa = taxa.add(ADICIONAL_A);
+        taxa = taxa.add(valorTransferencia.multiply(TAXA_A).setScale(2, BigDecimal.ROUND_HALF_EVEN));
 
         assertTrue(taxa.compareTo(transferencia.getTaxa()) == 0);
 
         Transferencia transferenciaZerada =
                 TransferenciaTDB.criarTransferenciaZerada("00000-0", "00000-1", LocalDate.now(), TipoTransferencia.A);
 
-        taxa = new BigDecimal(2);
-
         calculadoraDeTaxas.calcularTaxa(transferenciaZerada);
 
-        assertTrue(taxa.compareTo(transferenciaZerada.getTaxa()) == 0);
+        assertTrue(ADICIONAL_A.compareTo(transferenciaZerada.getTaxa()) == 0);
     }
 
     @Test
@@ -78,7 +91,7 @@ public class CaluladoraDeTaxasTest {
         LocalDate daqui30Dias = LocalDate.now().plusDays(30);
         LocalDate daqui31Dias = LocalDate.now().plusDays(31);
 
-        BigDecimal valorTransferencia = new BigDecimal(1000);
+        BigDecimal valorTransferencia = BigDecimal.valueOf(1000);
 
         Transferencia transferenciaHoje =
                 TransferenciaTDB.criarTransferencia("11111-1", "11111-2", valorTransferencia, LocalDate.now(), TipoTransferencia.B);
@@ -93,12 +106,9 @@ public class CaluladoraDeTaxasTest {
         calculadoraDeTaxas.calcularTaxa(transferencia30dias);
         calculadoraDeTaxas.calcularTaxa(transferencia31dias);
 
-        BigDecimal taxaAte30Dias = BigDecimal.TEN;
-        BigDecimal taxaMais30Dias = new BigDecimal(8);
-
-        assertTrue(taxaAte30Dias.compareTo(transferenciaHoje.getTaxa()) == 0);
-        assertTrue(taxaAte30Dias.compareTo(transferencia30dias.getTaxa()) == 0);
-        assertTrue(taxaMais30Dias.compareTo(transferencia31dias.getTaxa()) == 0);
+        assertTrue(ADICIONAL_B_ATE_30_DIAS.compareTo(transferenciaHoje.getTaxa()) == 0);
+        assertTrue(ADICIONAL_B_ATE_30_DIAS.compareTo(transferencia30dias.getTaxa()) == 0);
+        assertTrue(ADICIONAL_B_MAIS_30_DIAS.compareTo(transferencia31dias.getTaxa()) == 0);
 
         Transferencia transferenciaHojeZerada =
                 TransferenciaTDB.criarTransferenciaZerada("11111-1", "11111-1", LocalDate.now(), TipoTransferencia.B);
@@ -113,24 +123,21 @@ public class CaluladoraDeTaxasTest {
         calculadoraDeTaxas.calcularTaxa(transferencia30DiasZerada);
         calculadoraDeTaxas.calcularTaxa(transferencia31DiasZerada);
 
-        assertTrue(taxaAte30Dias.compareTo(transferenciaHojeZerada.getTaxa()) == 0);
-        assertTrue(taxaAte30Dias.compareTo(transferencia30DiasZerada.getTaxa()) == 0);
-        assertTrue(taxaMais30Dias.compareTo(transferencia31DiasZerada.getTaxa()) == 0);
+        assertTrue(ADICIONAL_B_ATE_30_DIAS.compareTo(transferenciaHojeZerada.getTaxa()) == 0);
+        assertTrue(ADICIONAL_B_ATE_30_DIAS.compareTo(transferencia30DiasZerada.getTaxa()) == 0);
+        assertTrue(ADICIONAL_B_MAIS_30_DIAS.compareTo(transferencia31DiasZerada.getTaxa()) == 0);
 
     }
 
     @Test
     public void deveCalcularTaxaCCorretamente() {
-
-        BigDecimal taxaCMais30Dias = BigDecimal.valueOf(0.12);
-        BigDecimal taxaCAte30Dias = BigDecimal.valueOf(0.21);
-
         List<BigDecimal> taxas = Arrays.asList(
-                BigDecimal.valueOf(0.43),
-                BigDecimal.valueOf(0.54),
-                BigDecimal.valueOf(0.67),
-                BigDecimal.valueOf(0.74),
-                BigDecimal.valueOf(0.83));
+                TAXA_C_ATE_25_DIAS,
+                TAXA_C_ATE_20_DIAS,
+                TAXA_C_ATE_15_DIAS,
+                TAXA_C_ATE_10_DIAS,
+                TAXA_C_ATE_5_DIAS
+        );
 
         BigDecimal valorTransferencia = BigDecimal.TEN;
 
@@ -145,7 +152,9 @@ public class CaluladoraDeTaxasTest {
         calculadoraDeTaxas.calcularTaxa(transferencia);
         calculadoraDeTaxas.calcularTaxa(transferenciaZerada);
 
-        assertTrue(taxaCMais30Dias.compareTo(transferencia.getTaxa()) == 0);
+        BigDecimal taxaEsperada = valorTransferencia.multiply(TAXA_C_MAIS_30_DIAS).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+
+        assertTrue(taxaEsperada.compareTo(transferencia.getTaxa()) == 0);
         assertTrue(BigDecimal.ZERO.compareTo(transferenciaZerada.getTaxa()) == 0);
 
         data = data.minusDays(1);
@@ -159,55 +168,56 @@ public class CaluladoraDeTaxasTest {
         calculadoraDeTaxas.calcularTaxa(transferencia);
         calculadoraDeTaxas.calcularTaxa(transferenciaZerada);
 
-        assertTrue(taxaCAte30Dias.compareTo(transferencia.getTaxa()) == 0);
+        taxaEsperada = valorTransferencia.multiply(TAXA_C_ATE_30_DIAS).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+
+        assertTrue(taxaEsperada.compareTo(transferencia.getTaxa()) == 0);
         assertTrue(BigDecimal.ZERO.compareTo(transferenciaZerada.getTaxa()) == 0);
 
         for (BigDecimal taxa : taxas) {
             data = data.minusDays(5);
 
             transferencia =
-                    TransferenciaTDB.criarTransferencia("11111-1", "11111-1", valorTransferencia, data, TipoTransferencia.C);
+                    TransferenciaTDB.clonarTransferenciaNaData(transferencia, data);
 
             transferenciaZerada =
-                    TransferenciaTDB.criarTransferenciaZerada("11111-1", "11111-1", data, TipoTransferencia.C);
+                    TransferenciaTDB.clonarTransferenciaNaData(transferenciaZerada, data);
 
             calculadoraDeTaxas.calcularTaxa(transferencia);
             calculadoraDeTaxas.calcularTaxa(transferenciaZerada);
 
-            assertTrue(taxa.compareTo(transferencia.getTaxa()) == 0);
+            taxaEsperada = valorTransferencia.multiply(taxa).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+
+            assertTrue(taxaEsperada.compareTo(transferencia.getTaxa()) == 0);
             assertTrue(BigDecimal.ZERO.compareTo(transferenciaZerada.getTaxa()) == 0);
         }
     }
 
     @Test
     public void deveCalcularTaxaDCorretamente() {
-        BigDecimal limiteA = BigDecimal.valueOf(25_000.99);
-        BigDecimal limiteInferiorB = BigDecimal.valueOf(25_001);
-        BigDecimal limiteSuperiorB = BigDecimal.valueOf(120_000);
-        BigDecimal limiteC = BigDecimal.valueOf(120_000.01);
 
 
         Transferencia transferenciaA =
-                TransferenciaTDB.criarTransferencia("00000-1", "00000-2", limiteA, LocalDate.now(), TipoTransferencia.D);
+                TransferenciaTDB.criarTransferencia("00000-1", "00000-2", LIMITE_VALOR_A, LocalDate.now(), TipoTransferencia.D);
 
         Transferencia transferenciaInferiorB =
-                TransferenciaTDB.criarTransferencia("00000-3", "00000-4", limiteInferiorB, LocalDate.now(), TipoTransferencia.D);
+                TransferenciaTDB.criarTransferencia("00000-3", "00000-4", LIMITE_VALOR_INFERIOR_B, LocalDate.now(), TipoTransferencia.D);
 
         Transferencia transferenciaSuperiorB =
-                TransferenciaTDB.criarTransferencia("00000-3", "00000-4", limiteSuperiorB, LocalDate.now(), TipoTransferencia.D);
+                TransferenciaTDB.criarTransferencia("00000-3", "00000-4", LIMITE_VALOR_SUPERIOR_B, LocalDate.now(), TipoTransferencia.D);
 
         Transferencia transferenciaC =
-                TransferenciaTDB.criarTransferencia("00000-3", "00000-4", limiteC, LocalDate.now().plusDays(31), TipoTransferencia.D);
+                TransferenciaTDB.criarTransferencia("00000-3", "00000-4", LIMITE_VALOR_C, LocalDate.now().plusDays(31), TipoTransferencia.D);
 
         calculadoraDeTaxas.calcularTaxa(transferenciaA);
         calculadoraDeTaxas.calcularTaxa(transferenciaInferiorB);
         calculadoraDeTaxas.calcularTaxa(transferenciaSuperiorB);
         calculadoraDeTaxas.calcularTaxa(transferenciaC);
 
-        BigDecimal taxaA = new BigDecimal(2);
-        taxaA = taxaA.add(limiteA.multiply(BigDecimal.valueOf(0.03)).setScale(2, BigDecimal.ROUND_HALF_EVEN));
+        BigDecimal taxaA = BigDecimal.ZERO;
+        taxaA = taxaA.add(ADICIONAL_A);
+        taxaA = taxaA.add(LIMITE_VALOR_A.multiply(TAXA_A).setScale(2, BigDecimal.ROUND_HALF_EVEN));
 
-        BigDecimal taxaC = limiteC.multiply(BigDecimal.valueOf(0.012)).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+        BigDecimal taxaC = LIMITE_VALOR_C.multiply(TAXA_C_MAIS_30_DIAS).setScale(2, BigDecimal.ROUND_HALF_EVEN);
 
         assertTrue(taxaA.compareTo(transferenciaA.getTaxa()) == 0);
         assertTrue(BigDecimal.TEN.compareTo(transferenciaInferiorB.getTaxa()) == 0);

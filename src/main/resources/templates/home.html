@@ -18,7 +18,7 @@
 
     <div>
         <label for="inpContaOrigem">Conta Origem</label>
-        <input type="text" id="inpContaOrigem" required="required" pattern="[0-9]{5}-[0-9]{1}" name="contaOrigem"
+        <input type="text" id="inpContaOrigem" required="required" pattern="[0-9]{5}-[0-9]" name="contaOrigem"
                th:field="*{contaOrigem}"/>
         <span class="danger" th:if="${#fields.hasErrors('contaOrigem')}" th:errors="*{contaOrigem}">Erro na conta origem</span>
     </div>
@@ -26,7 +26,7 @@
 
     <div>
         <label for="inpContaDestino">Conta Destino</label>
-        <input type="text" id="inpContaDestino" required="required" pattern="[0-9]{5}-[0-9]{1}" name="contaDestino"
+        <input type="text" id="inpContaDestino" required="required" pattern="[0-9]{5}-[0-9]" name="contaDestino"
                th:field="*{contaDestino}"/>
         <span class="danger" th:if="${#fields.hasErrors('contaDestino')}" th:errors="*{contaDestino}">Erro na conta destino</span>
     </div>

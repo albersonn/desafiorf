@@ -5,14 +5,14 @@ import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class Transferencia {
+public final class Transferencia {
 
     @NotNull
-    @Pattern(regexp = "[0-9]{5}-[0-9]{1}", message = "Conta deve seguir formato xxxxx-x")
+    @Pattern(regexp = "[0-9]{5}-[0-9]", message = "{conta.formato}")
     private String contaOrigem;
 
     @NotNull
-    @Pattern(regexp = "[0-9]{5}-[0-9]{1}", message = "Conta deve seguir formato xxxxx-x")
+    @Pattern(regexp = "[0-9]{5}-[0-9]", message = "{conta.formato}")
     private String contaDestino;
 
     @NotNull
@@ -27,6 +27,10 @@ public class Transferencia {
 
     @NotNull
     private TipoTransferencia tipoTransferencia;
+
+    public Transferencia() {
+        this.dataCadastro = LocalDate.now();
+    }
 
     public String getContaOrigem() {
         return contaOrigem;

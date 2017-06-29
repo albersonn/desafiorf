@@ -8,15 +8,15 @@ import java.util.Locale;
 
 public class TipoTransferenciaFormatter implements Formatter<TipoTransferencia> {
 
-  @Override
-  public TipoTransferencia parse(String text, Locale locale) throws ParseException {
-    if(text == null || text.isEmpty())
-      return null;
-    return TipoTransferencia.valueOf(text.toUpperCase());
-  }
+    @Override
+    public TipoTransferencia parse(String text, Locale locale) throws ParseException {
+        if (text == null || text.isEmpty())
+            return null;
+        return TipoTransferencia.valueOf(text.toUpperCase());
+    }
 
-  @Override
-  public String print(TipoTransferencia object, Locale locale) {
-    return object.toString();
-  }
+    @Override
+    public String print(TipoTransferencia object, Locale locale) {
+        return object.toString();
+    }
 }

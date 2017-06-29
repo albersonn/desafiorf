@@ -16,7 +16,7 @@ public class TransferenciaServico {
   private final CalculadoraDeTaxas calculadoraDeTaxas;
 
   @Autowired
-  public TransferenciaServico(TransferenciaDAO transferenciaDAO, CalculadoraDeTaxas calculadoraDeTaxas) {
+  public TransferenciaServico(final TransferenciaDAO transferenciaDAO, final CalculadoraDeTaxas calculadoraDeTaxas) {
     this.transferenciaDAO = transferenciaDAO;
     this.calculadoraDeTaxas = calculadoraDeTaxas;
   }
@@ -25,7 +25,7 @@ public class TransferenciaServico {
     return transferenciaDAO.listar();
   }
 
-  public void adicionar(Transferencia transferencia) {
+  public void adicionar(final Transferencia transferencia) {
     calculadoraDeTaxas.calcularTaxa(transferencia);
 
     transferenciaDAO.adicionar(transferencia);
